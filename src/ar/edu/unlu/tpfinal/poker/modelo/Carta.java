@@ -1,5 +1,7 @@
 package ar.edu.unlu.tpfinal.poker.modelo;
 
+import java.util.HashMap;
+
 public class Carta {
 
 	private String valor;
@@ -8,7 +10,7 @@ public class Carta {
 	
 	public Carta(String valor, String palo) {
 		this.setPalo(palo);
-		this.setValor(valor);
+		this.setValor(valor); 
 	}
 
 	public String getValor() {
@@ -17,10 +19,7 @@ public class Carta {
 	
 
 	private void setValor(String valor) {
-		if (valor.equals("2") || valor.equals("3") || valor.equals("4") || valor.equals("5")  || valor.equals("6") || valor.equals("7") ||
-				valor.equals("8") || valor.equals("9") || valor.equals("10") || valor.equals("J") || valor.equals("Q") || valor.equals("K") || valor.equals("AS")) {
-			this.valor = valor;
-		}
+		this.valor = valor;
 	}
 
 	public String getPalo() {

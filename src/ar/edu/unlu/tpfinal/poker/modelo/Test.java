@@ -10,11 +10,11 @@ public class Test {
 		
 		LinkedList<Carta> cartas = new LinkedList<Carta>();
 		
-		Carta c1 = new Carta("2", "DIAMANTE");
-		Carta c2 = new Carta("5", "PICA");
-		Carta c3 = new Carta("2", "PICA");
-		Carta c4 = new Carta("3", "PICA");
-		Carta c5 = new Carta("5", "PICA");
+		Carta c1 = new Carta("J", "PICA");
+		Carta c2 = new Carta("10", "PICA");
+		Carta c3 = new Carta("Q", "PICA");
+		Carta c4 = new Carta("K", "DIAMANTE");
+		Carta c5 = new Carta("AS", "PICA");
 
 		cartas.add(c1);
 		cartas.add(c2);
@@ -22,40 +22,46 @@ public class Test {
 		cartas.add(c4);
 		cartas.add(c5);
 		
-		//ProbarCartaMasAlta
-		//System.out.println(j.cartaMasAlta(cartas).getValor() + " " + j.cartaMasAlta(cartas).getPalo());
-		//FaltaProbarLetras
+		//EscaleraColor
+
+		System.out.println(j.escaleraColor(cartas));
 		
-		//ProbarPar
-		//System.out.println(j.cartaPar(cartas).getValor());
-		//FaltaProbarLetras
-		
-		//ProbarDoblePar
-		//System.out.println(j.doblePar(cartas));
-		//FaltaProbarLetras
-		
-		//ProbarTrio
-		//System.out.println(j.trio(cartas));
-		//FaltaProbarLetras
-		
-		//ProbarEscalera
-		/**LinkedList<Carta> cartasOrdenadas = j.ordenarCartas(cartas);
+		/**ProbarEscalera
+		LinkedList<Carta> cartasOrdenadas = j.ordenarCartas(cartas);
 		for(Carta c : cartasOrdenadas) {
 			System.out.println(c.getValor());
 		}
-		System.out.println(j.escalera(cartas));*/
+		System.out.println(j.escalera(cartas));
 		
-		//DA MAL
+		//ProbarCartaMasAlta
+		System.out.println(j.cartaMasAlta(cartas).getValor() + " " + j.cartaMasAlta(cartas).getPalo());
+		//FaltaProbarLetras
+		
+		//ProbarPar
+		try {
+		System.out.println(j.cartaPar(cartas).getValor());
+		} catch(Exception e){
+			System.out.println("Carga nula");
+		}
+		//FaltaProbarLetras
+		
+		//ProbarDoblePar
+		System.out.println(j.doblePar(cartas));
+		//FaltaProbarLetras
+		
+		//ProbarTrio
+		System.out.println(j.trio(cartas));
+		//FaltaProbarLetras
 		
 		//ProbarColor
-		//System.out.println(j.color(cartas));
+		System.out.println(j.color(cartas));
 		
 		//ProbarFull
 		System.out.println(j.full(cartas));
 		
 		//ProbarPoker
-		//System.out.println(j.poker(cartas));
-		
+		System.out.println(j.poker(cartas));
+		*/
 	}
 
 }

@@ -1,10 +1,28 @@
 package ar.edu.unlu.tpfinal.poker.modelo;
 
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class ResultadoJugadaJugador {
-	
 	private Carta cart = new Carta("10", "CORAZON");
+	private static HashMap<String, Integer> valorCarta= new HashMap<String, Integer>();
+	
+	public ResultadoJugadaJugador() {
+		valorCarta.put("2", 2);
+		valorCarta.put("3", 3);
+		valorCarta.put("4", 4);
+		valorCarta.put("5", 5);
+		valorCarta.put("6", 6);
+		valorCarta.put("7", 7);
+		valorCarta.put("8", 8);
+		valorCarta.put("9", 9);
+		valorCarta.put("10", 10);
+		valorCarta.put("J", 11);
+		valorCarta.put("Q", 12);
+		valorCarta.put("K", 13);
+		valorCarta.put("AS", 14);
+	}
 
 	public Resultado devolverValor(LinkedList<Carta> cartas) {
 		if (escaleraColor(cartas) == true) {
@@ -42,81 +60,33 @@ public class ResultadoJugadaJugador {
 		return flag;
 	}
 	
-	private void setearVector(Carta[] vector) {
-		for (int i = 0; i < vector.length; i++) {
-			vector[i] = null;
-		}
-	}
-	
-	private int buscarPosicionCarta(Carta carta) {
-		String [] ordenCartas = carta.getOrdenCartas();
-		for (int i = 0; i < ordenCartas.length; i++) {
-			if (carta.getValor() == ordenCartas[i]) {
-				return i;
-			}
-		}
-		return -1;
-	}
-	
-	private int proximaPosicion(Carta[] vector, int posicion) {
-		while (vector[posicion] != null) {
-			posicion ++;
-		}
-		return posicion;
-	}
-	
 	public LinkedList<Carta> ordenarCartas(LinkedList<Carta> cartas){
-		Carta[] vector = new Carta[50];
-		this.setearVector(vector);
-		LinkedList<Carta> cartasOrdenadas = new LinkedList<Carta>();
-		for (Carta c : cartas) {
-			if (vector[buscarPosicionCarta(c)] != null) {
-				vector[buscarPosicionCarta(c)] = c;
-			} else {
-				vector[proximaPosicion(vector, buscarPosicionCarta(c))] = c;
-			}
-		}
-		for (int i = 0; i < vector.length; i++) {
-			if (vector[i] != null) {
-				cartasOrdenadas.add(vector[i]);
-			}
-		}
-		return cartasOrdenadas;
+		cartas.sort(Comparator.comparing(carta -> valorCarta.get(carta.getValor())));
+		return cartas;
 	}
 	
 	public boolean escaleraColor(LinkedList<Carta> cartas) {
-		Carta c = cartas.get(1);
-		if (escalera(cartas) == true) {
-			for (Carta car : cartas) {
-				if (car.getPalo() != c.getPalo()) {
-					return false;
-				}
-			}
-		} else {
-			return false;
-		}
-		return true;
+		return ((escalera(cartas)) && (color(cartas)));
 	}
 	
 	public boolean escalera(LinkedList<Carta> cartas) {
 		LinkedList<Carta> cartasOrdenadas = this.ordenarCartas(cartas);
-		String [] vectorOrdenCartas = cart.getOrdenCartas();
-		//MirarEnCasoDeQueSeaAs
-		if (cartasOrdenadas.get(1).getValor() == "A" && cartasOrdenadas.get(2).getValor() == "10") {
-			for (int i = 3; i <= cartasOrdenadas.size(); i++) {
-				if (cartasOrdenadas.get(i).getValor() != vectorOrdenCartas[i - 1]) {
-					return false;
-				}
-			}
-		} else if(cartasOrdenadas.get(1).getValor() == "A" && cartasOrdenadas.get(2).getValor() != "10") {
-			for (int i = 2; i <= cartasOrdenadas.size(); i++) {
-				if (cartasOrdenadas.get(i).getValor() != vectorOrdenCartas[i - 1]) {
+		boolean flagAS = false;
+		int cartaAnt = valorCarta.get(cartasOrdenadas.getFirst().getValor());
+		if (cartasOrdenadas.getLast().getValor().equals("AS")) {
+			flagAS = true;
+		}
+		if (cartaAnt == 2) {
+			for(int i = 1; i < cartasOrdenadas.size() - 1; i++) {
+				cartaAnt++;
+				if(cartaAnt != valorCarta.get((cartasOrdenadas.get(i).getValor()))) {
 					return false;
 				}
 			}
 		} else {
-			for (int i = 1; i <= cartasOrdenadas.size(); i++) {
-				if (cartasOrdenadas.get(i).getValor() != vectorOrdenCartas[i - 1]) {
+			for(int i = 1; i < cartasOrdenadas.size(); i++) {
+				cartaAnt++;
+				if(cartaAnt != valorCarta.get((cartasOrdenadas.get(i).getValor()))) {
 					return false;
 				}
 			}

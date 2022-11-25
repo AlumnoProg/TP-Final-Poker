@@ -6,16 +6,16 @@ public class Jugador {
 
 	private LinkedList<Carta> cartas = new LinkedList<Carta>();
 	private LinkedList<Carta> cartas2 = new LinkedList<Carta>();
-	private int envite;
-	private int enviteDisponible;
+	private int apuesta;
+	private int apuestaDisponible;
 	private String nombre;
 	private int cantCartas;
 	private Carta cart;
 	
 	public Jugador(String nombre, int enviteDisponible) {
 		this.nombre = nombre;
-		this.enviteDisponible = enviteDisponible;
-		this.envite = 0;
+		this.apuestaDisponible = enviteDisponible;
+		this.apuesta = 0;
 		this.cantCartas = 0;
 	}
 
@@ -23,21 +23,22 @@ public class Jugador {
 		return cartas;
 	}
 
-	public int getEnvite() {
-		return envite;
+	public int getApuesta() {
+		return apuesta;
 	}
 
 	public String getNombre() {
 		return nombre;
 	}
 	
-	public int getEnviteDisponible() {
-		return enviteDisponible;
+	public int getApuestaDisponible() {
+		return apuestaDisponible;
 	}
 	
-	public void realizarEnvite(int cant) {
-		if (this.enviteDisponible >= cant) {
-			this.envite += cant;
+	public void realizarApuesta(int cant) {
+		if (this.apuestaDisponible >= cant) {
+			this.apuesta += cant;
+			this.apuestaDisponible -= cant;
 		}
 	}
 
