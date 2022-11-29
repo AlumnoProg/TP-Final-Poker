@@ -1,18 +1,27 @@
-package ar.edu.unlu.tpfinal.poker.vista;
+package ar.edu.unlu.tpfinal.poker.pruebas;
 
 import java.util.LinkedList;
 import java.util.Scanner;
 
-import ar.edu.unlu.tpfinal.poker.controlador.Controlador;
 import ar.edu.unlu.tpfinal.poker.modelo.Carta;
+import ar.edu.unlu.tpfinal.poker.modelo.Dealer;
 import ar.edu.unlu.tpfinal.poker.modelo.Jugador;
+import ar.edu.unlu.tpfinal.poker.modelo.Resultado;
 
-public class VistaConsola {
+public class Main {
 	
-	private Controlador controlador;
+	private LinkedList<Jugador> jugadores = new LinkedList<Jugador>();
+	private int cantJugadores = 0;
+	private Dealer dealer = new Dealer();
+	private Carta c;
 	
-	/**
-	private void iniciar() throws Exception{
+
+	public static void main(String[] args) throws Exception {
+		Main juego = new Main();
+		juego.comenzarJuego();
+	}
+	
+	private void comenzarJuego() throws Exception{
 		
 		int opcion = -1;
 		System.out.println("------------------------------------------------------------------------------");
@@ -20,36 +29,46 @@ public class VistaConsola {
 		System.out.println("------------------------------------------------------------------------------");
 		System.out.println("--                juegue bajo su propio riesgo                              --");
 		System.out.println("------------------------------------------------------------------------------");
-		inicializarJuego();
 		while (opcion != 0) {
 			opcion = mostrarMenuInicio();
 			switch (opcion) {
 				case 1:
-					agregarJugador();
+					//AgregarJugador
+					if (this.cantJugadores < 8) {
+						this.jugadores.add(agregarJugador());
+						cantJugadores++;
+					} else {
+						System.out.println("La cantidad de jugadores ya alcanzo su maximo");
+						esperarEnter();
+					}
 					
 				break;
 				case 2:
-					
+					//MostrarListaDeJugadores
+					mostrarJugadores();
+					esperarEnter();
 				break;
 				case 3:
+					//ComenzarPartida
+					if (this.cantJugadores > 1) {
+						jugar();
+					} else {
+						System.out.println("La cantidad de jugadores es insuficiente para comenzar");
+						esperarEnter();
+					}
 					
 				break;
 				case 0:
 					opcion = 0;
+					this.jugadores = new LinkedList<Jugador>();
+					this.cantJugadores = 0;
 					System.out.println("Se salio del juego exitosamente saludos!");
 				break;
 			}
 		}
 		
 	}
-	
-	private void inicializarJuego() {
-		int fondo;
-		System.out.println("Ingrese el fondo con el que empezaran todos los jugadores");
-		Scanner sc = new Scanner(System.in);
-		fondo = sc.nextInt();
-	}
-	
+
 	private int mostrarMenuInicio() {
 		int opcion = -1;
 		while (opcion < 0 || opcion > 3) {
@@ -70,6 +89,133 @@ public class VistaConsola {
 			opcion = sc.nextInt();
 		}
 		return opcion;
+	}
+
+	//--------------------------------------------------------------------------------------------------------------------------
+	
+	private Jugador agregarJugador() {
+		String nombre = "";
+		int fondoApuesta = -1;
+		while (nombre.equals("") && fondoApuesta == -1) {
+			System.out.println("Ingrese el nombre del jugador");
+			Scanner sc = new Scanner(System.in);
+			nombre = sc.nextLine();
+			System.out.println("Ingrese el fondo para apostar del jugador");
+			Scanner scc = new Scanner(System.in);
+			fondoApuesta = scc.nextInt();
+			if (nombre.equals("") && fondoApuesta == -1) {
+				System.out.println("Error, ingrese correctamente el nombre del jugador y el fondo para apostar");
+			}
+		}
+		Jugador jugador = new Jugador(nombre, fondoApuesta);
+		return jugador;
+	}
+	
+	private void mostrarJugadores() {
+		System.out.println("------------------------------------------------------------------------------");
+		System.out.println("--                            Lista de Jugadores                             --");
+		System.out.println("------------------------------------------------------------------------------");
+		int i = 1;
+		for (Jugador j : jugadores) {
+			System.out.println(i + " Nombre: " + j.getNombre() + " fondo apuestas: " + j.getApuestaDisponible());
+			i++;
+			System.out.println("");
+		}
+	}
+	
+	private void esperarEnter() {
+		System.out.println("Presione ENTER para continuar...");
+		Scanner sc = new Scanner(System.in);
+		String pausa = sc.nextLine();
+	}
+	
+	private void jugar() throws Exception{
+		LinkedList<Jugador> jugadoresActuales = dealer.primerJugadorRepartir(this.jugadores);
+		LinkedList<Jugador> jugadoresRonda = jugadoresActuales;
+		dealer.setearCartasRonda();
+		repartirCartas(jugadoresRonda);
+		revisarCartasApuesta(jugadoresRonda);
+		//RevisarQueTodosLosJugadoresTenganLasMismasApuestas_Despues_De_Volver_A_Apostar
+		procesoDescarte(jugadoresRonda);
+		revisarCartasApuesta(jugadoresRonda);
+		//RevisarQueTodosLosJugadoresTenganLasMismasApuestas_Despues_De_Volver_A_Apostar
+		Jugador jug = determinarGanador(jugadoresRonda);
+		//HacerUnPosoDeApuestasParaAgregarTodoAlGanador
+		System.out.println("El ganador es: " + jug.getNombre());
+		System.out.println("con: " + jug.calcularValorCartas());
+	}
+	
+	private Jugador determinarGanador(LinkedList<Jugador> jugadoresRonda) {
+		int[] jugadas = new int[jugadoresRonda.size()];
+		for (int i = 0; i < jugadoresRonda.size(); i++) {
+			jugadas[i] = jugadoresRonda.get(i).calcularResultado();
+		}
+		int posMayor = buscarMayor(jugadas);
+		if (seRepiteMayor(jugadas, posMayor)) {
+			int resultadoRepetido = jugadas[posMayor];
+			return verificarCartasMasAltas(jugadoresRonda, resultadoRepetido);
+		} else {
+			return jugadoresRonda.get(posMayor);
+		}
+	}
+	
+	private Jugador verificarCartasMasAltas(LinkedList<Jugador> jugs, int resultadoRepetido) {
+		LinkedList<Jugador> jugadoresConResultadosEmpatados = new LinkedList<Jugador>();
+		jugadoresConResultadosEmpatados = encontrarJugadoresConResultadosEmpatados(jugs, resultadoRepetido);
+		String[] orden = c.getOrdenCartas();
+		int cartaMayor = buscarPosicionOrden(jugadoresConResultadosEmpatados.getFirst().getCartas().getFirst().getValor(), orden);
+		Jugador jugadorGanadorActual = jugadoresConResultadosEmpatados.getFirst();
+		int valorCartaActual = -1;
+		for (Jugador j : jugadoresConResultadosEmpatados) {
+			valorCartaActual = buscarPosicionOrden(j.getCartas().getFirst().getValor(), orden);
+			if (valorCartaActual > cartaMayor) {
+				cartaMayor = valorCartaActual;
+				jugadorGanadorActual = j;
+			}
+		}
+		return jugadorGanadorActual;
+	}
+	
+	private int buscarPosicionOrden(String valorCarta, String[] orden) {
+		for (int i = 0; i < orden.length; i++) {
+			if (orden[i].equals(valorCarta)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	
+	private LinkedList<Jugador> encontrarJugadoresConResultadosEmpatados(LinkedList<Jugador> jugs, int resultadoRepetido){
+		LinkedList<Jugador> resultado = new LinkedList<Jugador>();
+		for (Jugador j : jugs) {
+			if (j.calcularResultado() == resultadoRepetido) {
+				resultado.add(j);
+			}
+		}
+		return resultado;
+	}
+	
+	private int buscarMayor(int[] jugadas) {
+		int posMayor = 0;
+		int mayor = jugadas[0];
+		for (int i = 1; i < jugadas.length; i++) {
+			if (jugadas[i] > mayor) {
+				mayor = jugadas[i];
+				posMayor = i;
+			}
+		}
+		return posMayor;
+	}
+	
+	private boolean seRepiteMayor(int[] jugadas, int posMayor) {
+		int mayor = jugadas[posMayor];
+		for (int i = 0; i < jugadas.length; i++) {
+			if (mayor == jugadas[i]) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private void procesoDescarte(LinkedList<Jugador> jugadoresRonda) {
@@ -139,6 +285,15 @@ public class VistaConsola {
 		return opcion;
 	}
 	
+	private void repartirCartas(LinkedList<Jugador> jugadoresActuales) {
+		dealer.setearCartasRonda();
+		for (Jugador j : jugadoresActuales) { //RepartirHastaCartasCincoCartasACadaJugador
+			while (j.getCartas().size() < 5) {
+				j.recibirCarta(dealer.repartirCarta());
+			}
+		}
+	}
+	
 	private void revisarCartasApuesta(LinkedList<Jugador> listaJugador) {
 		int apuestaAnterior = -1;
 		int cantidad = -1;
@@ -179,55 +334,6 @@ public class VistaConsola {
 		
 	}
 	
-	
-	
-	private void mostrarJugadores() {
-		System.out.println("------------------------------------------------------------------------------");
-		System.out.println("--                            Lista de Jugadores                             --");
-		System.out.println("------------------------------------------------------------------------------");
-		int i = 1;
-		for (Jugador j : jugadores) {
-			System.out.println(i + " Nombre: " + j.getNombre() + " fondo apuestas: " + j.getApuestaDisponible());
-			i++;
-			System.out.println("");
-		}
-	}
-	
-	private Jugador agregarJugador() {
-		String nombre = "";
-		int fondoApuesta = -1;
-		while (nombre.equals("") && fondoApuesta == -1) {
-			System.out.println("Ingrese el nombre del jugador");
-			Scanner sc = new Scanner(System.in);
-			nombre = sc.nextLine();
-			System.out.println("Ingrese el fondo para apostar del jugador");
-			Scanner scc = new Scanner(System.in);
-			fondoApuesta = scc.nextInt();
-			if (nombre.equals("") && fondoApuesta == -1) {
-				System.out.println("Error, ingrese correctamente el nombre del jugador y el fondo para apostar");
-			}
-		}
-		Jugador jugador = new Jugador(nombre, fondoApuesta);
-		return jugador;
-	}*/
-
-	public void mostrarJugadorMano(Jugador obtenerJugadorMano) {
-		System.out.println("Jugador mano: " + obtenerJugadorMano.getNombre());
-	}
-
-	public void mostrarCartasJugador(LinkedList<Jugador> jugadoresMesa) {
-		for (Jugador j : jugadoresMesa) {
-			System.out.println("");
-			System.out.println("Jugador: " + j.getNombre());
-			System.out.println("");
-			j.mostrarCartas();
-		}
-	}
-
-	public void mostrarMenuApuestas() {
-		mostrarMenuApuesta();
-	}
-	
 	private int mostrarMenuApuesta() {
 		int opcion = -1;
 		while (opcion < 0 || opcion > 3) {
@@ -244,110 +350,5 @@ public class VistaConsola {
 		}
 		return opcion;
 	}
-
-	public void informarJugadoresInsuficientes() {
-		System.out.println("La cantidad de jugadores es insuficiente para iniciar el juego");
-	}
-
-	public void informarCantJugadoresExcedidos() {
-		System.out.println("La cantidad de jugadores excede el limite maximo que permite el juego");
-	}
 	
-	
-	private int apuestas() {
-		int a = -1;
-		System.out.println("Ingrese lo que desea apostar:");
-		Scanner sc = new Scanner(System.in);
-		a = sc.nextInt();
-		return a;
-	}
-	
-	public void revisarCartasApuesta() {
-		int apuestaAnterior = -1;
-		//LinkedList<Jugador> jugadoresQueApostaron = new LinkedList<Jugador>();
-		LinkedList<Jugador> listaJugador =  controlador.getListaOrdenadaJugadorMano();
-		LinkedList<Jugador> listaJugadorAux = listaJugador;
-		System.out.println("APUESTAS");
-		for(Jugador j : listaJugadorAux) {
-			System.out.println("Nombre jugador" + j.getNombre());
-			System.out.println("");
-			int opcion = -1;
-			while (opcion != 3) {
-				opcion = mostrarMenuApuesta();
-				switch(opcion) {
-					case 1:
-						j.mostrarCartas();
-						esperarEnter();
-					break;
-					case 2:
-						int a = apuestas();
-						controlador.enviarApuestas(a, j);
-					break;
-					case 3:
-						opcion = 3;
-						listaJugadorAux.remove(j);
-						System.out.println("El jugador ha decidido dejar la ronda");
-						esperarEnter();
-					break;
-				}
-			}
-		}
-	}
-	
-	private void esperarEnter() {
-		System.out.println("Presione ENTER para continuar...");
-		Scanner sc = new Scanner(System.in);
-		String pausa = sc.nextLine();
-	}
-		
-			
-			
-			
-			
-				/**switch (opcion) {
-					
-					case 2 :
-						System.out.println("Fondo disponible para apostar: " + j.getApuestaDisponible());
-						System.out.println("Ingrese la cantidad de desea apostar: ");
-						Scanner sc = new Scanner(System.in);
-						cantidad = sc.nextInt();
-						while ((cantidad < apuestaAnterior) || (cantidad > j.getApuestaDisponible())) {
-							System.out.println("El valor de la apuesta debe ser igual o superior a las demas apuestas, y se debe tener los fondos disponibles");
-							Scanner scc = new Scanner(System.in);
-							cantidad = scc.nextInt();
-						}
-						apuestaAnterior = cantidad;
-						j.realizarApuesta(cantidad);
-					break;
-					*/
-
-			
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
+}
