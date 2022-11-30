@@ -221,7 +221,6 @@ public class VistaConsola {
 			System.out.println("Ganador: " + j.getNombre() + " con " + j.getResultadoValoresCartas());
 			System.out.println("");
 		}
-		
 	}
 
 	/**public void igualarDemasJugadoresApuestaMayor(LinkedList<Jugador> jugadoresMesa) {

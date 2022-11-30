@@ -2,6 +2,7 @@ package ar.edu.unlu.tpfinal.poker.modelo;
 
 import java.util.LinkedList;
 import java.util.Random;
+import java.security.SecureRandom;
 
 public class Dealer {
 
@@ -20,7 +21,7 @@ public class Dealer {
 		this.cartas.remove(indice);
 		return cartaResultado;
 	}
-	
+
 	/**private Carta repartirCarta() {
 		int indice = (int) (Math.random(System.currentTimeMillis())* ((this.cartas.size() - 1)));
 		Carta cartaResultado;
