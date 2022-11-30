@@ -10,7 +10,7 @@ import ar.edu.unlu.tpfinal.poker.modelo.Resultado;
 
 public class Main {
 	
-	private LinkedList<Jugador> jugadores = new LinkedList<Jugador>();
+/**	private LinkedList<Jugador> jugadores = new LinkedList<Jugador>();
 	private int cantJugadores = 0;
 	private Dealer dealer = new Dealer();
 	private Carta c;
@@ -349,6 +349,6 @@ public class Main {
 			opcion = sc.nextInt();
 		}
 		return opcion;
-	}
+	}*/
 	
 }

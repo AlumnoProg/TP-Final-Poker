@@ -2,6 +2,6 @@ package ar.edu.unlu.tpfinal.poker.modelo;
 
 public enum Resultado {
 	
-	ESCALERA_COLOR, POKER, FULL, COLOR, ESCALERA, TRIO, DOBLE_PAR, PAR, CARTA_MAYOR
+	CARTA_MAYOR, PAR, DOBLE_PAR, TRIO, ESCALERA, COLOR, FULL, POKER, ESCALERA_COLOR
 
 }

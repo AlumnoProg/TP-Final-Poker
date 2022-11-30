@@ -1,6 +1,7 @@
 package ar.edu.unlu.tpfinal.poker.modelo;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -10,12 +11,13 @@ import ar.edu.unlu.tpfinal.poker.comunes.Observer;
 public class Mesa implements Observado{
 	
 	private LinkedList<Jugador> jugadoresMesa = new LinkedList<Jugador>();
-	private Dealer dealer = new Dealer();
 	private LinkedList<Observer> listaObservadores = new LinkedList<Observer>();
 	private LinkedList<Jugador> jugadoresApuesta = new LinkedList<Jugador>();
+	private static HashMap<String, Integer> valorCarta= new HashMap<String, Integer>();
 	private int posJugadorMano;
 	private int fondoApuesta;
 	private int apuestaAnterior = 0;
+	private int posoDeApuestas = 0;
 	
 	@Override
 	public void agregarObservador(Observer o) {
@@ -40,12 +42,15 @@ public class Mesa implements Observado{
 	
 	public void iniciarJuego() {
 		if (this.jugadoresMesa.size() > 1) {
-			this.dealer.setearCartasRonda();
+
+			Dealer dealer = new Dealer();
+			dealer.setearCartasRonda();
 			this.posJugadorMano = this.seleccionarJugadorRandom();
 			this.notificarObservers(Informe.JUGADOR_MANO);
 			this.setearFondoApuestas();
-			this.dealer.repartirCartasRonda(this.jugadoresMesa, this.posJugadorMano);
+			dealer.repartirCartasRonda(this.jugadoresMesa, this.posJugadorMano);
 			this.notificarObservers(Informe.CARTAS_REPARTIDAS);
+			this.notificarObservers(Informe.DEVOLVER_GANADOR);
 		} else {
 			this.notificarObservers(Informe.CANT_JUGADORES_INSUFICIENTES);
 		}
@@ -55,6 +60,11 @@ public class Mesa implements Observado{
 	public LinkedList<Jugador> getJugadoresMesa() {
 		return jugadoresMesa;
 	}
+	
+	public void setFondoApuesta(int fondo) {
+		this.fondoApuesta = fondo;
+	}
+	
 	private void setearFondoApuestas() {
 		for (Jugador j : this.jugadoresMesa) {
 			j.setApuestaDisponible(this.fondoApuesta);
@@ -71,9 +81,6 @@ public class Mesa implements Observado{
 	}
 	public int getFondoApuesta() {
 		return fondoApuesta;
-	}
-	public void setFondoApuesta(int fondoApuesta) {
-		this.fondoApuesta = fondoApuesta;
 	}
 	
 	public LinkedList<Jugador> devolverJugadorEntregaCarta() {
@@ -103,25 +110,72 @@ public class Mesa implements Observado{
 		return Informe.APUESTA_MENOR;
 	}
 	
-	private int buscarApuestaMayor() {
-		this.jugadoresApuesta.sort(Comparator.comparing(Jugador :: getApuesta));
-		return this.jugadoresApuesta.getLast().getApuesta();
+	public void apuestaJugador(int apuesta, Jugador j) {
+		j.realizarApuesta(apuesta);
+		this.fondoApuesta += apuesta;
+		this.jugadoresApuesta.add(j);
+		//if (apuesta == 0) {
+			//eliminarJugadoresQueNoApostaron(j);
+		//}
+		this.notificarObservers(revisarApuesta(apuesta));
 	}
 	
-	private boolean verificarApuestasIguales() {
-		int apuestaMayor = buscarApuestaMayor();
-		for (Jugador j : this.jugadoresApuesta) {
-			if (j.getApuesta() != apuestaMayor) {
-				return false;
+	private void eliminarJugadoresQueNoApostaron(Jugador j) {
+		for (Jugador ja : this.jugadoresApuesta) {
+			if (ja.equals(j)) {
+				this.jugadoresApuesta.remove(ja);
 			}
 		}
-		return true;
 	}
 	
-	public void apuestaJugador(int apuesta, Jugador j) {
-		this.notificarObservers(revisarApuesta(apuesta));
-		
-		this.jugadoresApuesta.add(j);
+	private void calcularResultadoJugadores() {
+		for (Jugador j : this.jugadoresMesa) {
+			j.calcularValorCartas();
+		}
 	}
+	
+	public LinkedList<Jugador> devolverGanador(){
+		calcularResultadoJugadores();
+		LinkedList<Jugador> ganador = new LinkedList<Jugador>();
+		Jugador jugadorAnterior = this.jugadoresMesa.getFirst();
+		Jugador jugadorActual = null;
+		Jugador jugadorAux = null;
+		for (int i = 1; i < this.jugadoresMesa.size(); i++) {
+			jugadorActual = this.jugadoresMesa.get(i);
+			if (jugadorActual.getResultadoValoresCartas().ordinal() > jugadorAnterior.getResultadoValoresCartas().ordinal()) {
+				ganador.clear();
+				ganador.add(jugadorActual);
+			} else if (jugadorActual.getResultadoValoresCartas().ordinal() == jugadorAnterior.getResultadoValoresCartas().ordinal()) {
+				jugadorAux = buscarCartaMayor(jugadorAnterior, jugadorActual);
+				if (jugadorAux.equals(jugadorAnterior)) {
+					ganador.clear();
+					ganador.add(jugadorAnterior);
+				} else if (jugadorAux.equals(jugadorActual)) {
+					ganador.clear();
+					ganador.add(jugadorActual);
+				} else {
+					ganador.clear();
+					ganador.add(jugadorActual);
+					ganador.add(jugadorAnterior);
+				}
+			}
+			jugadorAnterior = jugadorActual;
+		}
+		return ganador;
+	}
+	
+	private Jugador buscarCartaMayor(Jugador jugador1, Jugador jugador2) {
+		Carta carta1 = jugador1.getCartasOrdenadas().getLast();
+		Carta carta2 = jugador2.getCartasOrdenadas().getLast();
+		if (Integer.parseInt(carta1.getValor()) > Integer.parseInt(carta2.getValor())) {
+			return jugador1;
+		} else if (Integer.parseInt(carta1.getValor()) < Integer.parseInt(carta2.getValor())) {
+			return jugador2;
+		} else {
+			return null;
+		}
+	}
+	
+	
 
 }

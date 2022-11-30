@@ -13,7 +13,7 @@ public class Dealer {
 	}
 	
 	private Carta repartirCarta() {
-		int indice = (int) (Math.random()* (this.cartas.size()));
+		int indice = (int) (Math.random()* ((this.cartas.size() - 1)));
 		Carta cartaResultado;
 		cartaResultado = this.cartas.get(indice);
 		this.cartas.remove(indice);
@@ -21,16 +21,18 @@ public class Dealer {
 	}
 	
 	public void repartirCartasRonda(LinkedList<Jugador> jugadores, int posJugadorMano) {
-		int i = 0;
 		Jugador jugadorActual;
-		while (i < jugadores.size()) {
-			jugadorActual = jugadores.get(posJugadorMano);
-			if (jugadorActual.getCartas().size() < 5) {
-				jugadorActual.recibirCarta(this.repartirCarta());
+		for (int j = 0; j < 5; j++) {
+			int i = 0;
+			while (i < jugadores.size()) {
+				jugadorActual = jugadores.get(posJugadorMano);
+				if (jugadorActual.getCartas().size() < 5) {
+					jugadorActual.recibirCarta(this.repartirCarta());
+				}
+				posJugadorMano++;
+				posJugadorMano = posJugadorMano %jugadores.size(); 
+				i++;
 			}
-			posJugadorMano++;
-			posJugadorMano = posJugadorMano %jugadores.size(); 
-			i++;
 		}
 	}
 	
@@ -45,10 +47,9 @@ public class Dealer {
 	
 	public void setearCartasRonda() {
 		int i = 0;
+		this.cartas  = new LinkedList<Carta>();
 		for (Carta c : this.cartasTotales) {
-			this.cartas  = new LinkedList<Carta>();
-			this.cartas.add(this.cartasTotales.get(i));
-			i++;
+			this.cartas.add(c);
 		}
 	}
 

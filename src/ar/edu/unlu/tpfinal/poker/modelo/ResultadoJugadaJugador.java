@@ -26,7 +26,7 @@ public class ResultadoJugadaJugador {
 
 	public Resultado devolverValor(LinkedList<Carta> cartas) {
 		if (escaleraColor(cartas) == true) {
-			return Resultado.ESCALERA_COLOR;
+			return Resultado.ESCALERA_COLOR;	
 		} else if(poker(cartas) == true){
 			return Resultado.POKER;
 		} else if (full(cartas) == true) {
@@ -48,16 +48,15 @@ public class ResultadoJugadaJugador {
 	
 	
 	public boolean color(LinkedList<Carta> cartas) {
-		boolean flag = true;
 		cart = cartas.getFirst();
 		String paloCarta = cart.getPalo(); 
 		for (Carta c : cartas) {
 			//SiPaloDeCartaDistinto
 			if (!(c.getPalo().equals(paloCarta))) {
-				flag = false;
+				return false;
 			}
 		}
-		return flag;
+		return true;
 	}
 	
 	public LinkedList<Carta> ordenarCartas(LinkedList<Carta> cartas){
@@ -105,33 +104,30 @@ public class ResultadoJugadaJugador {
 	}
 	
 	public boolean par(LinkedList<Carta> cartas) {
-		boolean flag = false;
 		for (Carta c : cartas) {
 			if (contarRepeticiones(cartas, c) == 2) {
-				flag = true;
+				return true;
 			}
 		}
-		return flag;
+		return false;
 	}
 	
 	public boolean trio(LinkedList<Carta> cartas) {
-		boolean flag = false;
 		for (Carta c : cartas) {
 			if (contarRepeticiones(cartas, c) == 3) {
-				flag = true;
+				return true;
 			}
 		}
-		return flag;
+		return false;
 	}
 	
 	public boolean poker(LinkedList<Carta> cartas) {
-		boolean flag = false;
 		for (Carta c : cartas) {
 			if (contarRepeticiones(cartas, c) == 4) {
-				flag = true;
+				return true;
 			}
 		}
-		return flag;
+		return false;
 	}
 	
 	private int obtenerPosicion(Carta carta) {
@@ -144,26 +140,20 @@ public class ResultadoJugadaJugador {
 		return -1;
 	}
 	
+	public Carta mayorDeDosCartas(Carta c1, Carta c2) {
+		if (valorCarta.get(c1.getValor()) > valorCarta.get(c2.getValor())) {
+			return c1;
+		} else if (valorCarta.get(c1.getValor()) < valorCarta.get(c2.getValor())) {
+			return c2;
+		} else {
+			//EnCasoDeSerIguales
+			return null;
+		}
+	}
 	
 	public Carta cartaMasAlta(LinkedList<Carta> cartas) {
-		int mayor = obtenerPosicion(cartas.getFirst());
-		Carta cartaMayor = null;
-		int actual;
-		Carta cartaActual = null;
-		for (Carta c : cartas) {
-			actual = obtenerPosicion(c);
-			cartaActual = c;
-			if (actual == 0) {
-				mayor = actual;
-				cartaMayor = cartaActual;
-			} else if (actual > mayor && mayor != 0) {
-				mayor = actual;
-				cartaMayor = cartaActual;
-			}
-		}
-		
-		return cartaMayor;
-		
+		LinkedList<Carta> cartasOrdenadas = this.ordenarCartas(cartas);
+		return cartasOrdenadas.getLast();
 	}
 	
 	public Carta cartaPar(LinkedList<Carta> cartas) {
@@ -176,14 +166,24 @@ public class ResultadoJugadaJugador {
 		return cartaPar;
 	}
 	
+	private boolean cartaDoblePar(LinkedList<Carta> cartas, Carta cartaPar) {
+		for (Carta c : cartas) {
+			if (c.getValor() != cartaPar.getValor() && c.getPalo() != cartaPar.getPalo()) {
+				if (contarRepeticiones(cartas, c) == 2) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	public boolean doblePar(LinkedList<Carta> cartas) {
 		LinkedList<Carta> cartasAux = cartas;
-		Carta primerPar = cartaPar(cartasAux);
-		if (primerPar != null) {
-			cartasAux.remove(primerPar);
-			if (par(cartasAux)) {
+		Carta cartaPar = cartaPar(cartasAux);
+		if (cartaPar != null) {
+			if (cartaDoblePar(cartasAux, cartaPar)){
 				return true;
-			} 
+			}
 		}
 		return false;
 	}
@@ -198,14 +198,26 @@ public class ResultadoJugadaJugador {
 		return cartaTrio;
 	}
 	
+	private Carta buscarCartaTrio(Carta carta, LinkedList<Carta> cartas) {
+		for (Carta c : cartas) {
+			if (carta.getValor() == c.getValor()) {
+				return c;
+			}
+		}
+		return null;
+	}
+	
 	public boolean full(LinkedList<Carta> cartas) {
 		LinkedList<Carta> cartasAux = cartas;
-		Carta trioFull = cartaTrio(cartasAux);
-		if (trioFull != null) {
+		if (trio(cartasAux)) {
+			Carta trioFull = cartaTrio(cartasAux);
 			cartasAux.remove(trioFull);
-			cartasAux.remove(trioFull);
-			if (par(cartasAux)) {
-				return true;
+			Carta c = buscarCartaTrio(trioFull, cartasAux);
+			if (c != null) {
+				cartasAux.remove(c);
+				if (par(cartasAux)) {
+					return true;
+				}
 			}
 		}
 		return false;

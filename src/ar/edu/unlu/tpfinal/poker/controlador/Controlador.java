@@ -35,9 +35,25 @@ public class Controlador implements Observer{
 			case CANT_JUGADORES_EXCEDIDOS:
 				vista.informarCantJugadoresExcedidos();
 			break;
+			case APUESTA_MAYOR:
+				vista.igualarDemasJugadoresApuestaMayor(((Mesa)observado).getJugadoresMesa());
+			break;
+			case APUESTA_IGUAL:
+				vista.apuestaIgualada(((Mesa)observado).getJugadoresMesa());
+			break;
+			case APUESTA_MENOR:
+				vista.eliminarJugador(((Mesa)observado).getJugadoresMesa());
+			break;
+			case DEVOLVER_GANADOR:
+				vista.mostrarGanador(((Mesa)observado).devolverGanador());
+			break;
 		}
 	}
 
+	public void agregarJugador(Jugador j) {
+		mesa.agregarJugador(j);
+	}
+	
 	public LinkedList<Jugador> getJugadoresMesa(){
 		return mesa.getJugadoresMesa();
 	}
@@ -48,6 +64,22 @@ public class Controlador implements Observer{
 
 	public void enviarApuestas(int apuesta, Jugador j) {
 		mesa.apuestaJugador(apuesta, j);
+	}
+	
+	public void setearFondoApuestas(int fondo) {
+		mesa.setFondoApuesta(fondo);
+	}
+	
+	public LinkedList<Jugador> obtenerJugadores(){
+		return mesa.getJugadoresMesa();
+	}
+	
+	public void iniciarGame() {
+		mesa.iniciarJuego();
+	}
+	
+	public void igualarDemasJugadoresApuestaMayor() {
+		
 	}
 	
 }

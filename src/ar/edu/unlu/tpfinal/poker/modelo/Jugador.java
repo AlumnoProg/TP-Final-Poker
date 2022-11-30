@@ -8,11 +8,13 @@ public class Jugador {
 
 	private LinkedList<Carta> cartas = new LinkedList<Carta>();
 	private LinkedList<Carta> cartas2 = new LinkedList<Carta>();
-	private static HashMap<String, Integer> valorCarta= new HashMap<String, Integer>();
+	//private static HashMap<String, Integer> valorCarta= new HashMap<String, Integer>();
 	private int apuesta;
 	private int apuestaDisponible;
 	private String nombre;
-	private int cantCartas = 0;
+	//private int cantCartas = 0;
+	private Resultado resultadoValoresCartas;
+	
 	public void setApuestaDisponible(int apuestaDisponible) {
 		this.apuestaDisponible = apuestaDisponible;
 	}
@@ -22,28 +24,20 @@ public class Jugador {
 	public Jugador(String nombre) {
 		this.nombre = nombre;
 		this.apuesta = 0;
-		this.cantCartas = 0;
+		//this.cantCartas = 0;
 	}
 	
 	public Jugador(String nombre, int apuestaDisponible) {
 		this.nombre = nombre;
 		this.apuestaDisponible = apuestaDisponible;
 		this.apuesta = 0;
-		this.cantCartas = 0;
+		//this.cantCartas = 0;
 	}
 
 	public LinkedList<Carta> getCartas() {
 		return cartas;
 	}
 	
-	public void mostrarCartas() {
-		System.out.println("Cartas: ");
-		System.out.println("");
-		for (Carta c : this.getCartas()) {
-			System.out.println(c.getValor() + " de " + c.getPalo());
-			System.out.println("");
-		}
-	}
 	
 	public boolean descartarCarta(Carta c) {
 		if (buscarCarta(c)) {
@@ -82,54 +76,23 @@ public class Jugador {
 	}
 
 	public void recibirCarta(Carta carta) {
-		if (this.cantCartas < 6) {
-			this.cartas2.add(carta);
-			this.cantCartas ++;
-		} else {
-			this.cantCartas = 0;
-			this.cartas = ordenarCartas(this.cartas2);
-		}
+		this.cartas.add(carta);
 	}
 	
-	public Resultado calcularValorCartas() {
-		ResultadoJugadaJugador jugada = new ResultadoJugadaJugador();;
-		return jugada.devolverValor(this.cartas);
-	}
-	
-	
-	public int calcularResultado() {
+	public void calcularValorCartas() {
 		ResultadoJugadaJugador jugada = new ResultadoJugadaJugador();
-		Resultado resultadoJugada;
-		resultadoJugada = jugada.devolverValor(this.cartas);
-		this.resultadoMano = resultadoJugada;
-		if (resultadoJugada == Resultado.CARTA_MAYOR) {
-			return 0;
-		} else if(resultadoJugada == Resultado.PAR) {
-			return 1;
-		} else if (resultadoJugada == Resultado.DOBLE_PAR) {
-			return 2;
-		} else if (resultadoJugada == Resultado.TRIO) {
-			return 3;
-		} else if (resultadoJugada == Resultado.ESCALERA) {
-			return 4;
-		} else if (resultadoJugada == Resultado.COLOR) {
-			return 5;
-		} else if (resultadoJugada == Resultado.FULL) {
-			return 6;
-		} else if(resultadoJugada == Resultado.POKER) {
-			return 7;
-		} else {
-			return 8;
-		}
+		LinkedList<Carta> cartasAux = this.cartas;
+		this.resultadoValoresCartas = jugada.devolverValor(cartasAux);
 	}
 	
-	private LinkedList<Carta> ordenarCartas(LinkedList<Carta> cartas){
-		cartas.sort(Comparator.comparing(carta -> valorCarta.get(carta.getValor())));
-		return cartas;
+	public LinkedList<Carta> getCartasOrdenadas(){
+		ResultadoJugadaJugador r = new ResultadoJugadaJugador();
+		return r.ordenarCartas(this.cartas);
 	}
+	
 
-	public Resultado getResultadoMano() {
-		return resultadoMano;
+	public Resultado getResultadoValoresCartas() {
+		return resultadoValoresCartas;
 	}
 
 }
