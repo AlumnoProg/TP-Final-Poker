@@ -19,7 +19,7 @@ public class VistaConsola {
 		System.out.println("------------------------------------------------------------------------------");
 		System.out.println("--                juegue bajo su propio riesgo                              --");
 		System.out.println("------------------------------------------------------------------------------");
-		inicializarFondoApuestas();
+		//inicializarFondoApuestas();
 		while (opcion != 0) {
 			opcion = mostrarMenuInicio();
 			switch (opcion) {
@@ -62,14 +62,14 @@ public class VistaConsola {
 		Jugador j = new Jugador(nombre);
 		controlador.agregarJugador(j);
 	}
-	
+	/**
 	private void inicializarFondoApuestas() {
 		int fondo;
 		System.out.println("Ingrese el fondo con el que empezaran todos los jugadores");
 		Scanner sc = new Scanner(System.in);
 		fondo = sc.nextInt();
 		controlador.setearFondoApuestas(fondo);
-	}
+	}*/
 	
 	
 	
@@ -118,7 +118,7 @@ public class VistaConsola {
 			}
 		}
 	}
-
+/**
 	public void mostrarMenuApuestas() {
 		int opcion = -1;
 		while (opcion != 0) {
@@ -152,7 +152,7 @@ public class VistaConsola {
 			opcion = sc.nextInt();
 		}
 		return opcion;
-	}
+	}*/
 
 	public void informarJugadoresInsuficientes() {
 		System.out.println("La cantidad de jugadores es insuficiente para iniciar el juego");
@@ -163,7 +163,7 @@ public class VistaConsola {
 	}
 	
 	
-	private int apuestas() {
+	/**private int apuestas() {
 		int a = -1;
 		System.out.println("Ingrese lo que desea apostar:");
 		Scanner sc = new Scanner(System.in);
@@ -201,7 +201,7 @@ public class VistaConsola {
 				}
 			}
 		}
-	}
+	}*/
 	
 	private void mostrarCartasJugador(Jugador j) {
 		System.out.println("Jugador: " + j.getNombre());
@@ -224,7 +224,7 @@ public class VistaConsola {
 		
 	}
 
-	public void igualarDemasJugadoresApuestaMayor(LinkedList<Jugador> jugadoresMesa) {
+	/**public void igualarDemasJugadoresApuestaMayor(LinkedList<Jugador> jugadoresMesa) {
 		int apuestaMayor = buscarApuestaMayor(jugadoresMesa);
 		System.out.println("Se ha ingresado una apuesta mayor" + apuestaMayor + " se deben igualar las demas apuestas");
 		for (Jugador j : jugadoresMesa) {
@@ -257,7 +257,7 @@ public class VistaConsola {
 			opcion = sc.nextInt();
 		}
 		return opcion;
-	}
+	}*/
 		
 }
 	

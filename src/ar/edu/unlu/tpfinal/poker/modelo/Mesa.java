@@ -12,12 +12,12 @@ public class Mesa implements Observado{
 	
 	private LinkedList<Jugador> jugadoresMesa = new LinkedList<Jugador>();
 	private LinkedList<Observer> listaObservadores = new LinkedList<Observer>();
-	private LinkedList<Jugador> jugadoresApuesta = new LinkedList<Jugador>();
+	//private LinkedList<Jugador> jugadoresApuesta = new LinkedList<Jugador>();
 	private static HashMap<String, Integer> valorCarta= new HashMap<String, Integer>();
 	private int posJugadorMano;
-	private int fondoApuesta;
-	private int apuestaAnterior = 0;
-	private int posoDeApuestas = 0;
+	//private int fondoApuesta;
+	//private int apuestaAnterior = 0;
+	//private int posoDeApuestas = 0;
 	
 	@Override
 	public void agregarObservador(Observer o) {
@@ -47,7 +47,7 @@ public class Mesa implements Observado{
 			dealer.setearCartasRonda();
 			this.posJugadorMano = this.seleccionarJugadorRandom();
 			this.notificarObservers(Informe.JUGADOR_MANO);
-			this.setearFondoApuestas();
+			//this.setearFondoApuestas();
 			dealer.repartirCartasRonda(this.jugadoresMesa, this.posJugadorMano);
 			this.notificarObservers(Informe.CARTAS_REPARTIDAS);
 			this.notificarObservers(Informe.DEVOLVER_GANADOR);
@@ -61,7 +61,7 @@ public class Mesa implements Observado{
 		return jugadoresMesa;
 	}
 	
-	public void setFondoApuesta(int fondo) {
+	/**public void setFondoApuesta(int fondo) {
 		this.fondoApuesta = fondo;
 	}
 	
@@ -69,7 +69,7 @@ public class Mesa implements Observado{
 		for (Jugador j : this.jugadoresMesa) {
 			j.setApuestaDisponible(this.fondoApuesta);
 		}
-	}
+	}*/
 	
 	private int seleccionarJugadorRandom() {
 		return (int) (Math.random() * this.jugadoresMesa.size());
@@ -79,9 +79,10 @@ public class Mesa implements Observado{
 	public int getPosJugadorMano() {
 		return posJugadorMano;
 	}
+	/**
 	public int getFondoApuesta() {
 		return fondoApuesta;
-	}
+	}*/
 	
 	public LinkedList<Jugador> devolverJugadorEntregaCarta() {
 		int i = 0;
@@ -98,7 +99,7 @@ public class Mesa implements Observado{
 		return listaOrdenada;
 	}
 	
-	private Informe revisarApuesta(int apuesta) {
+	/**private Informe revisarApuesta(int apuesta) {
 		if (apuesta > this.apuestaAnterior) {
 			this.apuestaAnterior = apuesta;
 			return Informe.APUESTA_MAYOR;
@@ -126,7 +127,7 @@ public class Mesa implements Observado{
 				this.jugadoresApuesta.remove(ja);
 			}
 		}
-	}
+	}*/
 	
 	private void calcularResultadoJugadores() {
 		for (Jugador j : this.jugadoresMesa) {
@@ -137,29 +138,25 @@ public class Mesa implements Observado{
 	public LinkedList<Jugador> devolverGanador(){
 		calcularResultadoJugadores();
 		LinkedList<Jugador> ganador = new LinkedList<Jugador>();
-		Jugador jugadorAnterior = this.jugadoresMesa.getFirst();
+		ganador.add(this.jugadoresMesa.getFirst());
 		Jugador jugadorActual = null;
 		Jugador jugadorAux = null;
 		for (int i = 1; i < this.jugadoresMesa.size(); i++) {
 			jugadorActual = this.jugadoresMesa.get(i);
-			if (jugadorActual.getResultadoValoresCartas().ordinal() > jugadorAnterior.getResultadoValoresCartas().ordinal()) {
+			if (jugadorActual.getResultadoValoresCartas().ordinal() > ganador.getFirst().getResultadoValoresCartas().ordinal()) {
 				ganador.clear();
 				ganador.add(jugadorActual);
-			} else if (jugadorActual.getResultadoValoresCartas().ordinal() == jugadorAnterior.getResultadoValoresCartas().ordinal()) {
-				jugadorAux = buscarCartaMayor(jugadorAnterior, jugadorActual);
-				if (jugadorAux.equals(jugadorAnterior)) {
-					ganador.clear();
-					ganador.add(jugadorAnterior);
+			} else if (jugadorActual.getResultadoValoresCartas().ordinal() == ganador.getFirst().getResultadoValoresCartas().ordinal()) {
+				jugadorAux = buscarCartaMayor(ganador.getFirst(), jugadorActual);
+				if (jugadorAux.equals(ganador.getFirst())) {
+					//Gana el anterior
 				} else if (jugadorAux.equals(jugadorActual)) {
 					ganador.clear();
 					ganador.add(jugadorActual);
 				} else {
-					ganador.clear();
 					ganador.add(jugadorActual);
-					ganador.add(jugadorAnterior);
 				}
 			}
-			jugadorAnterior = jugadorActual;
 		}
 		return ganador;
 	}
@@ -167,13 +164,17 @@ public class Mesa implements Observado{
 	private Jugador buscarCartaMayor(Jugador jugador1, Jugador jugador2) {
 		Carta carta1 = jugador1.getCartasOrdenadas().getLast();
 		Carta carta2 = jugador2.getCartasOrdenadas().getLast();
-		if (Integer.parseInt(carta1.getValor()) > Integer.parseInt(carta2.getValor())) {
+		LinkedList <Carta> cartasAlta = new LinkedList<Carta>();
+		cartasAlta.add(carta1);
+		cartasAlta.add(carta2);
+		ResultadoJugadaJugador r = new ResultadoJugadaJugador();
+		Carta cartaMasAlta = r.cartaMasAlta(cartasAlta);
+		if (cartaMasAlta.equals(carta1)) {
 			return jugador1;
-		} else if (Integer.parseInt(carta1.getValor()) < Integer.parseInt(carta2.getValor())) {
+		} else if (cartaMasAlta.equals(carta2)){
 			return jugador2;
-		} else {
-			return null;
-		}
+		} 
+		return null;
 	}
 	
 	

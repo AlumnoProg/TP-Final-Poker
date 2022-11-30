@@ -27,7 +27,7 @@ public class Controlador implements Observer{
 			break;
 			case CARTAS_REPARTIDAS:
 				vista.mostrarCartasJugador(((Mesa)observado).getJugadoresMesa());
-				vista.mostrarMenuApuestas();
+				//vista.mostrarMenuApuestas();
 			break;
 			case CANT_JUGADORES_INSUFICIENTES:
 				vista.informarJugadoresInsuficientes();
@@ -35,7 +35,7 @@ public class Controlador implements Observer{
 			case CANT_JUGADORES_EXCEDIDOS:
 				vista.informarCantJugadoresExcedidos();
 			break;
-			case APUESTA_MAYOR:
+			/**case APUESTA_MAYOR:
 				vista.igualarDemasJugadoresApuestaMayor(((Mesa)observado).getJugadoresMesa());
 			break;
 			case APUESTA_IGUAL:
@@ -43,7 +43,7 @@ public class Controlador implements Observer{
 			break;
 			case APUESTA_MENOR:
 				vista.eliminarJugador(((Mesa)observado).getJugadoresMesa());
-			break;
+			break;*/
 			case DEVOLVER_GANADOR:
 				vista.mostrarGanador(((Mesa)observado).devolverGanador());
 			break;
@@ -62,13 +62,13 @@ public class Controlador implements Observer{
 		return mesa.devolverJugadorEntregaCarta();
 	}
 
-	public void enviarApuestas(int apuesta, Jugador j) {
+	/**public void enviarApuestas(int apuesta, Jugador j) {
 		mesa.apuestaJugador(apuesta, j);
 	}
 	
 	public void setearFondoApuestas(int fondo) {
 		mesa.setFondoApuesta(fondo);
-	}
+	}*/
 	
 	public LinkedList<Jugador> obtenerJugadores(){
 		return mesa.getJugadoresMesa();
@@ -76,10 +76,6 @@ public class Controlador implements Observer{
 	
 	public void iniciarGame() {
 		mesa.iniciarJuego();
-	}
-	
-	public void igualarDemasJugadoresApuestaMayor() {
-		
 	}
 	
 }
