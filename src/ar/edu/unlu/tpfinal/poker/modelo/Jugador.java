@@ -7,7 +7,7 @@ import java.util.LinkedList;
 public class Jugador {
 
 	private LinkedList<Carta> cartas = new LinkedList<Carta>();
-	private LinkedList<Carta> cartas2 = new LinkedList<Carta>();
+	//private LinkedList<Carta> cartas2 = new LinkedList<Carta>();
 	//private static HashMap<String, Integer> valorCarta= new HashMap<String, Integer>();
 	private int apuesta;
 	private int apuestaDisponible;
@@ -25,6 +25,10 @@ public class Jugador {
 		this.nombre = nombre;
 		this.apuesta = 0;
 		//this.cantCartas = 0;
+	}
+	
+	public void resetearCartas() {
+		this.cartas.clear();
 	}
 	
 	public Jugador(String nombre, int apuestaDisponible) {

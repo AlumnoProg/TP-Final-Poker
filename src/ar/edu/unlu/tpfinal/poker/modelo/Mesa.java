@@ -51,6 +51,9 @@ public class Mesa implements Observado{
 			dealer.repartirCartasRonda(this.jugadoresMesa, this.posJugadorMano);
 			this.notificarObservers(Informe.CARTAS_REPARTIDAS);
 			this.notificarObservers(Informe.DEVOLVER_GANADOR);
+			for (Jugador j : this.jugadoresMesa) {
+				j.resetearCartas();
+			}
 		} else {
 			this.notificarObservers(Informe.CANT_JUGADORES_INSUFICIENTES);
 		}

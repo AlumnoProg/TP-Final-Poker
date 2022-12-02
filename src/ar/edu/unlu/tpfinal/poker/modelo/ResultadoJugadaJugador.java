@@ -25,15 +25,15 @@ public class ResultadoJugadaJugador {
 	}
 
 	public Resultado devolverValor(LinkedList<Carta> cartas) {
-		if (escaleraColor(cartas) == true) {
+		if (escaleraColor(cartas)) {
 			return Resultado.ESCALERA_COLOR;	
-		} else if(poker(cartas) == true){
+		} else if(poker(cartas)){
 			return Resultado.POKER;
-		} else if (full(cartas) == true) {
+		} else if (full(cartas)) {
 			return Resultado.FULL;
-		} else if (color(cartas) == true) {
+		} else if (color(cartas)) {
 			return Resultado.COLOR;
-		} else if (escalera(cartas) == true) {
+		} else if (escalera(cartas)) {
 			return Resultado.ESCALERA;
 		} else if(trio(cartas) == true) {
 			return Resultado.TRIO;

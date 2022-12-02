@@ -1,6 +1,7 @@
 package ar.edu.unlu.tpfinal.poker.modelo;
 
 import java.util.LinkedList;
+
 import java.util.Random;
 import java.security.SecureRandom;
 
@@ -8,6 +9,7 @@ public class Dealer {
 
 	private LinkedList<Carta> cartasTotales = new LinkedList<Carta>();
 	private LinkedList<Carta> cartas;
+	private Random aleatorio = new Random();
 	
 	public Dealer() {
 		this.setearCartasTotales();
@@ -15,7 +17,6 @@ public class Dealer {
 	}
 	
 	private Carta repartirCarta() {
-		Random aleatorio = new Random(System.currentTimeMillis());
 		int indice = aleatorio.nextInt(this.cartas.size() - 1);
 		Carta cartaResultado = this.cartas.get(indice);
 		this.cartas.remove(indice);
@@ -23,7 +24,7 @@ public class Dealer {
 	}
 
 	/**private Carta repartirCarta() {
-		int indice = (int) (Math.random(System.currentTimeMillis())* ((this.cartas.size() - 1)));
+		int indice = (int) (Math.random()* ((this.cartas.size() - 1)));
 		Carta cartaResultado;
 		cartaResultado = this.cartas.get(indice);
 		this.cartas.remove(indice);
